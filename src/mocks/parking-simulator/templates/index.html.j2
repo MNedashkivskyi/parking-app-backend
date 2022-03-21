@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pl-PL">
+<head>
+    <title>Parking simulator</title>
+    <link href="{{ url_for('static', path='w3.css') }}" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <meta name='viewport' content='width=device-width, initial-scale=1'/>
+</head>
+
+<body class="w3-sand">
+
+{% if parking_lots %}
+    <div class="w3-bar w3-black">
+        {% for parking in parking_lots %}
+            <button class="w3-bar-item w3-button parking-tablink" onclick="openParking(event, '{{parking.name}}')">{{parking.name}}</button>
+        {% endfor %}
+    </div>
+    {% for parking in parking_lots %}
+        <div id="{{parking.name}}" class="w3-panel parking" style="display:none">
+            <div class="w3-bar w3-dark-gray">
+                {% for level in parking.levels %}
+                <button class="w3-bar-item w3-border-white w3-button level-tablink" onclick="openLevel(event, '{{level.name}}')">{{level.name}}</button>
+                {% endfor %}
+            </div>
+            {% for level in parking.levels %}
+            <div id="{{level.name}}" class="w3-container level" style="display:none">
+                <table class="w3-table w3-centered w3-border-white">
+                {% for place in level.places %}
+                    {% if place["id"]%3 == 0 %}
+                        <tr class="w3-row">
+                    {% endif %}
+                            {% if place["status"] == 0 %}
+                                <td class="w3-cell w3-padding-large w3-hover-blue w3-green"><b>Wolne miejsce</b><br/>
+                                    <form action="/reserve">
+                                        <label for="battery">kWh:</label>
+                                        <input type="hidden" id="id" name="id" value="{{place['id']}}"/>
+                                            <input required class="w3-input" type="number" id="battery" name="battery"/>
+                                        <input type="submit" class="w3-button w3-yellow" value="Zarezerwuj"/>
+                                    </form>
+                                </td>
+                            {% elif place["status"] == 1 %}
+                                <td class="w3-cell w3-padding-large w3-hover-blue w3-orange"><b>Zarezerwowane miejsce</b><br/>
+                                    Możesz go zająć przy użyciu aplikacji
+                                </td>
+                            {% elif place["status"] == 2 %}
+                                <td class="w3-cell w3-padding-large w3-hover-blue w3-red"><b>Zajęte miejsce</b><br/>
+                                    <a href="/free?id={{place['id']}}" class="w3-button w3-yellow">Zwolnij</a>
+                                </td>
+                            {% endif %}
+                    {% if place["id"]%3 == 2 %}
+                        </tr>
+                        <tr class="w3-row w3-grey"><td class="w3-cell" colspan="3">&nbsp;</td></tr>
+                    {% endif %}
+                {% endfor %}
+                </table>
+            </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+{% else %}
+<div class="w3-bar w3-pale-red" style="height: 100vh;">
+    <div class="w3-display-middle w3-center">
+        <h1 class="w3-text-red">An error occurred!</h1>
+        <i class="material-icons w3-text-red" style="font-size:96px;">warning</i>
+        <p>Perhaps main API is not turned on?</p>
+    </div>
+</div>
+{% endif %}
+
+<script>
+    function openParking(evt, parkingName) {
+        let i, x, tablinks;
+        x = document.getElementsByClassName("parking");
+        for (i = 0; i < x.length; i++) {
+        x[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("parking-tablink");
+        for (i = 0; i < x.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
+        }
+        document.getElementById(parkingName).style.display = "block";
+        evt.currentTarget.className += " w3-red";
+    }
+    function openLevel(evt, levelName) {
+        let i, x, tablinks;
+        x = document.getElementsByClassName("level");
+        for (i = 0; i < x.length; i++) {
+        x[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("level-tablink");
+        for (i = 0; i < x.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
+        }
+        document.getElementById(levelName).style.display = "block";
+        evt.currentTarget.className += " w3-red";
+    }
+</script>
+
+</body>
+</html>

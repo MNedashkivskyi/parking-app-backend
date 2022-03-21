@@ -1,0 +1,43 @@
+POST http://localhost:8080/users/login HTTP/1.1
+content-type: application/json
+
+{
+    "name": "test",
+    "passwd": "test"
+}
+
+###
+
+POST http://localhost:8080/users/register HTTP/1.1
+content-type: application/json
+
+{
+    "name": "test",
+    "passwd": "test",
+    "mail": "test@test.org"
+}
+
+###
+
+GET http://localhost:8080/cars?owner=0 HTTP/1.1
+
+###
+
+POST http://localhost:8080/cars HTTP/1.1
+content-type: application/json
+
+{
+    "owner_id": 0,
+    "manufacturer": "test",
+    "model": "test",
+    "registration_number": "W0 TEST"
+}
+
+###
+
+DELETE http://localhost:8080/cars HTTP/1.1
+content-type: application/json
+
+{
+    "registration_number": "W0 TEST"
+}
